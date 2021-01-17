@@ -45,6 +45,8 @@ module.exports = {
           name: '[name].[ext]?[hash]'
         }
       },
+      // CSS 提取应该只用于生产环境
+      // 这样我们在开发过程中仍然可以热重载
       {
         test: /\.styl(us)?$/,
         use: isProd
@@ -72,6 +74,7 @@ module.exports = {
           compress: { warnings: false }
         }),
         new webpack.optimize.ModuleConcatenationPlugin(),
+
         new ExtractTextPlugin({
           filename: 'common.[chunkhash].css'
         })

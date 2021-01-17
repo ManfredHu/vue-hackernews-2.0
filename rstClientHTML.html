@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Vue HN 2.0 | Top</title>
+  <meta charset="utf-8">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" sizes="120x120" href="/public/logo-120.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+  <link rel="shortcut icon" sizes="48x48" href="/public/logo-48.png">
+  <meta name="theme-color" content="#f60">
+  <link rel="manifest" href="/manifest.json">
+  <style>
+    #skip a {
+      position: absolute;
+      left: -10000px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+
+    #skip a:focus {
+      position: static;
+      width: auto;
+      height: auto;
+    }
+  </style>
+  <link rel="preload" href="/dist/manifest.js" as="script">
+  <link rel="preload" href="/dist/vendor.js" as="script">
+  <link rel="preload" href="/dist/app.js" as="script">
+  <link rel="preload" href="/dist/1.js" as="script">
+  <link rel="prefetch" href="/dist/0.js">
+  <link rel="prefetch" href="/dist/2.js">
+  <style data-vue-ssr-id="4ae2c658:0">
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+      font-size: 15px;
+      background-color: #f2f3f5;
+      margin: 0;
+      padding-top: 55px;
+      color: #34495e;
+      overflow-y: scroll;
+    }
+
+    a {
+      color: #34495e;
+      text-decoration: none;
+    }
+
+    .header {
+      background-color: #f60;
+      position: fixed;
+      z-index: 999;
+      height: 55px;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .header .inner {
+      max-width: 800px;
+      box-sizing: border-box;
+      margin: 0px auto;
+      padding: 15px 5px;
+    }
+
+    .header a {
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 24px;
+      transition: color 0.15s ease;
+      display: inline-block;
+      vertical-align: middle;
+      font-weight: 300;
+      letter-spacing: 0.075em;
+      margin-right: 1.8em;
+    }
+
+    .header a:hover {
+      color: #fff;
+    }
+
+    .header a.router-link-active {
+      color: #fff;
+      font-weight: 400;
+    }
+
+    .header a:nth-child(6) {
+      margin-right: 0;
+    }
+
+    .header .github {
+      color: #fff;
+      font-size: 0.9em;
+      margin: 0;
+      float: right;
+    }
+
+    .logo {
+      width: 24px;
+      margin-right: 10px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .view {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .fade-enter-active,
+    .fade-leave-active {
+      transition: all 0.2s ease;
+    }
+
+    .fade-enter,
+    .fade-leave-active {
+      opacity: 0;
+    }
+
+    @media (max-width: 860px) {
+      .header .inner {
+        padding: 15px 30px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header .inner {
+        padding: 15px;
+      }
+
+      .header a {
+        margin-right: 1em;
+      }
+
+      .header .github {
+        display: none;
+      }
+    }
+  </style>
+  <style data-vue-ssr-id="3612aecf:0">
+    .news-view {
+      padding-top: 45px;
+    }
+
+    .news-list-nav,
+    .news-list {
+      background-color: #fff;
+      border-radius: 2px;
+    }
+
+    .news-list-nav {
+      padding: 15px 30px;
+      position: fixed;
+      text-align: center;
+      top: 55px;
+      left: 0;
+      right: 0;
+      z-index: 998;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .news-list-nav a {
+      margin: 0 1em;
+    }
+
+    .news-list-nav .disabled {
+      color: #ccc;
+    }
+
+    .news-list {
+      position: absolute;
+      margin: 30px 0;
+      width: 100%;
+      transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+    }
+
+    .news-list ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .slide-left-enter,
+    .slide-right-leave-to {
+      opacity: 0;
+      transform: translate(30px, 0);
+    }
+
+    .slide-left-leave-to,
+    .slide-right-enter {
+      opacity: 0;
+      transform: translate(-30px, 0);
+    }
+
+    .item-move,
+    .item-enter-active,
+    .item-leave-active {
+      transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+    }
+
+    .item-enter {
+      opacity: 0;
+      transform: translate(30px, 0);
+    }
+
+    .item-leave-active {
+      position: absolute;
+      opacity: 0;
+      transform: translate(30px, 0);
+    }
+
+    @media (max-width: 600px) {
+      .news-list {
+        margin: 10px 0;
+      }
+    }
+  </style>
+  <style data-vue-ssr-id="685f3a7e:0">
+    .news-item {
+      background-color: #fff;
+      padding: 20px 30px 20px 80px;
+      border-bottom: 1px solid #eee;
+      position: relative;
+      line-height: 20px;
+    }
+
+    .news-item .score {
+      color: #f60;
+      font-size: 1.1em;
+      font-weight: 700;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 80px;
+      text-align: center;
+      margin-top: -10px;
+    }
+
+    .news-item .meta,
+    .news-item .host {
+      font-size: 0.85em;
+      color: #828282;
+    }
+
+    .news-item .meta a,
+    .news-item .host a {
+      color: #828282;
+      text-decoration: underline;
+    }
+
+    .news-item .meta a:hover,
+    .news-item .host a:hover {
+      color: #f60;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="skip"><a href="#app">skip to content</a></div>
+  <div id="app" data-server-rendered="true">
+    <header class="header">
+      <nav class="inner"><a href="/"><img
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAIAAADYYG7QAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA4JpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDE0IDc5LjE1Njc5NywgMjAxNC8wOC8yMC0wOTo1MzowMiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo3RDBBRDcwNDU4NEMxMUU2ODdFNjg5OTYwMjlGNjQ0QSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo1NTU3NUVGQUEyRDIxMUU2ODlEMUJBMUE3RTYxMkU1OSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1NTU3NUVGOUEyRDIxMUU2ODlEMUJBMUE3RTYxMkU1OSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxNCAoTWFjaW50b3NoKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjE2NTUwMDE5LTVjNjQtNGRiNy1iNjhjLTQ1ZWIxYzkxM2FiYiIgc3RSZWY6ZG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOmJlZDc4OTczLWViM2ItMTE3OS04YzQyLWNlMTYwYmQ0NTQ1NSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pv38lU4AAAMkSURBVHja7FnbSxRRGP+N666upqUECWK+mUqbmxbRQ4QmFEFQmtZDEPQcvfQ/9BL1WO920SyCjJCIyC5iXsmVMjVB8pbVqnhBc2dm+84azHzjbszsupPBfA8L8ztnzvzmu/zON2elcDiMrWQp2GK25QilsqvQKmB/BCW408SvkZC8iptVCE7CJdlHhjI4LQNXXyE7bwMhGguOYWba4LXkmgp43VCVGCFzeQRgM6FUj1NlDiGH0L9T6r/YWqRE9aapa7RiXuOIC/CY2gVMEyqrRnqWdqmE8PE55FAUTsQmKxdFRxk4N47RHkFrcwjRFnf4Ig5dYOCNSgy0CT8Z7Bdw4hJqrzOw6TIGe+DdrBwiN7y5bQQP1BmDiEhQKDTlZxm4PIvuJng2MalprZFOTAYYuO8UsjOMnGSgoBSFFQwMtOBH0Ey8rHhoRUHnPQbmFKDoCEJ8Jl2WnUYKz4T3Dear2fREclJvc6Rh0llFPfMQxStdQnktm/NtCEPvTMbLCiF656kxfH7JQN9J5GRpnMg9hT4U+Nmc7kYshyAlQxjViPP1Rl3VnkpNciiB/DWQdGsqa+hphDtJSk1uH2jFwjSvtXotXhku7K9hoyNvMT6cNEI0d34RfY8ZWHocuTlQ1uPlR/5eNtrRINyWxL2MSrfzLkO27URJtWBDnEQ665Jl6ScCT82nc1yEyPmjXRj/wKN2LhKvVPjPMLz/CYJzJuUnXkL0/quq0Uklx7A9E7vLkFfM5edOHM2E9TvISX0PEVrREO8OFFcJCdDb9CeMtFuNV1yEhCB9xeALBlZdQXkdQ7ruY1mGZAOh9Qrv4IJEeZ3v0+1oJD8PLFV7YoQoENQMzU/FnDDchokvNhISgrSEvkcxJ5CgKzb31H8EKVpPuvgdgWdxpHNihIQg9WIiEGWovwWz81blx3pPvVGQZBWt13DwvHHo9a1ETgcSuJW66Y5mtDdHWdIT/zFTYicd7ti64Hy5OoQcQlGrTFVEJ6/a+HzxODkWIUkcJ3gz7T70TM+EpLUpku6/jjAWZqDI+uGkGz2dPpuydyHFtZGQk9T/BaHfAgwAytLfbeiDo+IAAAAASUVORK5CYII="
+            alt="logo" class="logo"></a><a href="/top" aria-current="page"
+          class="router-link-exact-active router-link-active">Top</a><a href="/new">New</a><a href="/show">Show</a><a
+          href="/ask">Ask</a><a href="/job">Jobs</a><a href="https://github.com/vuejs/vue-hackernews-2.0"
+          target="_blank" rel="noopener" class="github">
+          Built with Vue.js
+        </a></nav>
+    </header>
+    <div class="news-view view">
+      <div class="news-list-nav"><a class="disabled">&lt; prev</a><span>1/25</span><a href="/top/2">more &gt;</a></div>
+      <div class="news-list">
+        <ul>
+          <li class="news-item"><span class="score">217</span><span class="title"><a href="https://www.jingos.com/"
+                target="_blank" rel="noopener">JingOS: Linux Distro Inspired by the iPad</a><span class="host">
+                (jingos.com)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/throwaway888abc">throwaway888abc</a></span><span class="time">
+                6 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25807792">94 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">40</span><span class="title"><a
+                href="https://singularityhub.com/2021/01/10/the-worlds-oldest-story-astronomers-say-global-myths-about-seven-sisters-stars-may-reach-back-100000-years/"
+                target="_blank" rel="noopener">The World’s Oldest Story? ‘Seven Sisters’ Myths May Reach Back 100k
+                Years</a><span class="host"> (singularityhub.com)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/akamoonknight">akamoonknight</a></span><span class="time">
+                2 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25808878">4 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">205</span><span class="title"><a
+                href="https://news.artnet.com/art-world/yinmn-blue-comes-market-1921665" target="_blank"
+                rel="noopener">The first blue pigment discovered in 200 years is now commercially available</a><span
+                class="host"> (news.artnet.com)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/uptown">uptown</a></span><span class="time">
+                8 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25807199">75 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">11</span><span class="title"><a
+                href="https://www.jstor.org/stable/pdf/534759.pdf" target="_blank" rel="noopener">Sailor’s Chanties
+                (1906) [pdf]</a><span class="host"> (jstor.org)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/brudgers">brudgers</a></span><span class="time">
+                1 hour ago
+              </span><span class="comments-link">
+                | <a href="/item/25809066">3 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">261</span><span class="title"><a href="https://mnmnotmail.org/"
+                target="_blank" rel="noopener">Mnm – an open source project to replace email and SMTP</a><span
+                class="host"> (mnmnotmail.org)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/skinkestek">skinkestek</a></span><span class="time">
+                13 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25804869">143 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">59</span><span class="title"><a href="https://latacora.micro.blog/"
+                target="_blank" rel="noopener">The SOC2 Starting Seven</a><span class="host">
+                (latacora.micro.blog)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/Ballu">Ballu</a></span><span class="time">
+                1 day ago
+              </span><span class="comments-link">
+                | <a href="/item/25800791">16 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">182</span><span class="title"><a
+                href="https://eli.thegreenplace.net/2021/rest-servers-in-go-part-1-standard-library/" target="_blank"
+                rel="noopener">REST Servers in Go: Part 1 – standard library</a><span class="host">
+                (eli.thegreenplace.net)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/tutfbhuf">tutfbhuf</a></span><span class="time">
+                13 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25805158">87 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">1419</span><span class="title"><a
+                href="https://gomox.medium.com/google-safe-browsing-can-kill-your-startup-7d73c474b98d" target="_blank"
+                rel="noopener">Google Safe Browsing can kill a startup</a><span class="host">
+                (gomox.medium.com)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/gomox">gomox</a></span><span class="time">
+                18 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25802366">486 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">247</span><span class="title"><a
+                href="http://www.alpinist.com/doc/web21w/newswire-k2-first-winter-ascent" target="_blank"
+                rel="noopener">A Nepali team has made the first winter ascent of K2</a><span class="host">
+                (alpinist.com)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/eigenvector">eigenvector</a></span><span class="time">
+                15 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25804183">108 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">81</span><span class="title"><a
+                href="http://spritesmods.com/?art=minipdp11&amp;page=1" target="_blank" rel="noopener">Tiny PDP11 on an
+                ESP32</a><span class="host"> (spritesmods.com)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/rcarmo">rcarmo</a></span><span class="time">
+                20 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25801841">11 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">124</span><span class="title"><a
+                href="https://www.palkeo.com/en/projets/ethereum/bzx.html" target="_blank" rel="noopener">Attacking the
+                DeFi ecosystem with flash loans for fun and profit (2020)</a><span class="host">
+                (palkeo.com)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/lawrenceyan">lawrenceyan</a></span><span class="time">
+                12 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25805635">91 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">62</span><span class="title"><a
+                href="https://www2.clarku.edu/faculty/djoyce/complex/" target="_blank" rel="noopener">Dave’s Short
+                Course on Complex Numbers (2013)</a><span class="host"> (www2.clarku.edu)</span></span><br><span
+              class="meta"><span class="by">
+                by <a href="/user/blewboarwastake">blewboarwastake</a></span><span class="time">
+                1 day ago
+              </span><span class="comments-link">
+                | <a href="/item/25801063">5 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">149</span><span class="title"><a
+                href="https://www.gamasutra.com/view/feature/131815/the_cabal_valves_design_process_.php"
+                target="_blank" rel="noopener">The Cabal: Valve’s Design Process for Creating Half-Life</a><span
+                class="host"> (gamasutra.com)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/thisismyswamp">thisismyswamp</a></span><span class="time">
+                14 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25804194">67 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">4</span><span class="title"><a
+                href="https://www.theguardian.com/books/2021/jan/14/dostoevsky-in-love-by-alex-christofi-review-unpredictable-dangerous-and-thrilling"
+                target="_blank" rel="noopener">Dostoevsky in Love review</a><span class="host">
+                (theguardian.com)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/lermontov">lermontov</a></span><span class="time">
+                8 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25807178">0 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">82</span><span class="title"><a
+                href="https://www.lightbend.com/blog/how-akka-cluster-works-actors-living-in-a-cluster" target="_blank"
+                rel="noopener">How Akka Cluster Works: Actors Living in a Cluster</a><span class="host">
+                (lightbend.com)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/walkingolof">walkingolof</a></span><span class="time">
+                13 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25805112">41 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">82</span><span class="title"><a
+                href="https://dwheeler.com/essays/apple-goto-fail.html" target="_blank" rel="noopener">The Apple goto
+                fail vulnerability: lessons learned (2014)</a><span class="host"> (dwheeler.com)</span></span><br><span
+              class="meta"><span class="by">
+                by <a href="/user/MrXOR">MrXOR</a></span><span class="time">
+                1 day ago
+              </span><span class="comments-link">
+                | <a href="/item/25801019">33 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">52</span><span class="title"><a
+                href="https://github.com/fujitsu/A64FX/blob/master/doc/A64FX_Microarchitecture_Manual_en_1.3.pdf"
+                target="_blank" rel="noopener">Fujitsu A64FX Microarchitecture Manual [pdf]</a><span class="host">
+                (github.com)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/rrss">rrss</a></span><span class="time">
+                12 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25805615">30 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">222</span><span class="title"><a
+                href="https://github.com/fanfare/googleimagesrestored" target="_blank" rel="noopener">Google Images
+                Restored</a><span class="host"> (github.com)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/alphabet9000">alphabet9000</a></span><span class="time">
+                14 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25804597">133 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">66</span><span class="title"><a href="https://dhewm3.org/"
+                target="_blank" rel="noopener">dhewm3 - DOOM3 Source Port</a><span class="host">
+                (dhewm3.org)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/Lammy">Lammy</a></span><span class="time">
+                1 day ago
+              </span><span class="comments-link">
+                | <a href="/item/25800581">20 comments</a></span></span>
+            <!---->
+          </li>
+          <li class="news-item"><span class="score">103</span><span class="title"><a
+                href="http://www.aholme.co.uk/Mk1/Architecture.htm" target="_blank" rel="noopener">Mark 1 Homebuilt
+                Forth Computer (TTL only, no microprocessor)</a><span class="host">
+                (aholme.co.uk)</span></span><br><span class="meta"><span class="by">
+                by <a href="/user/peter_d_sherman">peter_d_sherman</a></span><span class="time">
+                15 hours ago
+              </span><span class="comments-link">
+                | <a href="/item/25803748">36 comments</a></span></span>
+            <!---->
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <script>
+    window.__INITIAL_STATE__ = {
+      "activeType": "top",
+      "itemsPerPage": 20,
+      "items": {
+        "25800581": {
+          "by": "Lammy",
+          "descendants": 20,
+          "id": 25800581,
+          "kids": [25806557, 25807842, 25806589, 25807907, 25806731, 25807969, 25807260, 25807841],
+          "score": 66,
+          "time": 1610779212,
+          "title": "dhewm3 - DOOM3 Source Port",
+          "type": "story",
+          "url": "https:\u002F\u002Fdhewm3.org\u002F",
+          "__lastUpdated": 1610875221859
+        },
+        "25800791": {
+          "by": "Ballu",
+          "descendants": 16,
+          "id": 25800791,
+          "kids": [25808991, 25808922, 25808608, 25809063, 25808424, 25808737, 25808740, 25809077, 25808997],
+          "score": 59,
+          "time": 1610782766,
+          "title": "The SOC2 Starting Seven",
+          "type": "story",
+          "url": "https:\u002F\u002Flatacora.micro.blog\u002F",
+          "__lastUpdated": 1610875221853
+        },
+        "25801019": {
+          "by": "MrXOR",
+          "descendants": 33,
+          "id": 25801019,
+          "kids": [25806140, 25805507, 25805941, 25809041, 25809110, 25806152, 25806130, 25805175, 25806905],
+          "score": 82,
+          "time": 1610786702,
+          "title": "The Apple goto fail vulnerability: lessons learned (2014)",
+          "type": "story",
+          "url": "https:\u002F\u002Fdwheeler.com\u002Fessays\u002Fapple-goto-fail.html",
+          "__lastUpdated": 1610875221858
+        },
+        "25801063": {
+          "by": "blewboarwastake",
+          "descendants": 5,
+          "id": 25801063,
+          "kids": [25809335, 25807936],
+          "score": 62,
+          "time": 1610787357,
+          "title": "Dave’s Short Course on Complex Numbers (2013)",
+          "type": "story",
+          "url": "https:\u002F\u002Fwww2.clarku.edu\u002Ffaculty\u002Fdjoyce\u002Fcomplex\u002F",
+          "__lastUpdated": 1610875221856
+        },
+        "25801841": {
+          "by": "rcarmo",
+          "descendants": 11,
+          "id": 25801841,
+          "kids": [25809075, 25807540, 25809180, 25807551, 25807297],
+          "score": 81,
+          "time": 1610800495,
+          "title": "Tiny PDP11 on an ESP32",
+          "type": "story",
+          "url": "http:\u002F\u002Fspritesmods.com\u002F?art=minipdp11&page=1",
+          "__lastUpdated": 1610875221855
+        },
+        "25802366": {
+          "by": "gomox",
+          "descendants": 486,
+          "id": 25802366,
+          "kids": [25805294, 25802758, 25803869, 25802951, 25802818, 25803023, 25806408, 25803141, 25803691, 25802987,
+            25808500, 25803308, 25802827, 25803723, 25804843, 25804946, 25803343, 25802703, 25802904, 25802749,
+            25805637, 25802701, 25802806, 25804591, 25803960, 25802979, 25802793, 25802685, 25807181, 25806238,
+            25802679, 25803121, 25806523, 25807914, 25802808, 25802681, 25806986, 25804840, 25803258, 25805332,
+            25803328, 25805841, 25803553, 25805682, 25803164, 25802722, 25803223, 25809127, 25804389, 25803939,
+            25804943, 25806584, 25803517, 25803394, 25803470, 25804020, 25802830, 25806415, 25806607, 25805836,
+            25803687, 25805269, 25804326, 25808895, 25806491, 25805365, 25805430, 25804024, 25803397, 25803402,
+            25804130, 25806546, 25804603, 25806518, 25806105, 25804336, 25806253, 25802816, 25806049, 25807511,
+            25803816, 25803805, 25803594, 25803489, 25802673, 25803500, 25803810, 25803199, 25806841, 25806816,
+            25804329, 25802650, 25802751, 25802852, 25803298, 25803434, 25802902, 25803421
+          ],
+          "score": 1419,
+          "time": 1610807530,
+          "title": "Google Safe Browsing can kill a startup",
+          "type": "story",
+          "url": "https:\u002F\u002Fgomox.medium.com\u002Fgoogle-safe-browsing-can-kill-your-startup-7d73c474b98d",
+          "__lastUpdated": 1610875221854
+        },
+        "25803748": {
+          "by": "peter_d_sherman",
+          "descendants": 36,
+          "id": 25803748,
+          "kids": [25804688, 25806480, 25808088, 25804264, 25808549, 25804555, 25806519, 25805769, 25803754,
+            25806913],
+          "score": 103,
+          "time": 1610818558,
+          "title": "Mark 1 Homebuilt Forth Computer (TTL only, no microprocessor)",
+          "type": "story",
+          "url": "http:\u002F\u002Fwww.aholme.co.uk\u002FMk1\u002FArchitecture.htm",
+          "__lastUpdated": 1610875797101
+        },
+        "25804183": {
+          "by": "eigenvector",
+          "descendants": 108,
+          "id": 25804183,
+          "kids": [25805093, 25805734, 25808157, 25806264, 25805601, 25804988, 25808963, 25805429, 25805232, 25806890,
+            25809217
+          ],
+          "score": 247,
+          "time": 1610821790,
+          "title": "A Nepali team has made the first winter ascent of K2",
+          "type": "story",
+          "url": "http:\u002F\u002Fwww.alpinist.com\u002Fdoc\u002Fweb21w\u002Fnewswire-k2-first-winter-ascent",
+          "__lastUpdated": 1610875221854
+        },
+        "25804194": {
+          "by": "thisismyswamp",
+          "descendants": 67,
+          "id": 25804194,
+          "kids": [25804922, 25805335, 25804526, 25805408, 25807729, 25806074, 25806168, 25804956, 25806422, 25808519,
+            25805229, 25806461, 25805177, 25806887, 25809220, 25804719
+          ],
+          "score": 149,
+          "time": 1610821869,
+          "title": "The Cabal: Valve’s Design Process for Creating Half-Life",
+          "type": "story",
+          "url": "https:\u002F\u002Fwww.gamasutra.com\u002Fview\u002Ffeature\u002F131815\u002Fthe_cabal_valves_design_process_.php",
+          "__lastUpdated": 1610875221857
+        },
+        "25804597": {
+          "by": "alphabet9000",
+          "descendants": 133,
+          "id": 25804597,
+          "kids": [25805079, 25805198, 25805865, 25805258, 25806550, 25807400, 25805497, 25808630, 25805034, 25806864,
+            25805190, 25805451, 25805683, 25806803, 25807196, 25806032, 25806136, 25805319, 25805843, 25805605,
+            25809222, 25806372
+          ],
+          "score": 222,
+          "time": 1610824568,
+          "title": "Google Images Restored",
+          "type": "story",
+          "url": "https:\u002F\u002Fgithub.com\u002Ffanfare\u002Fgoogleimagesrestored",
+          "__lastUpdated": 1610875221859
+        },
+        "25804869": {
+          "by": "skinkestek",
+          "descendants": 143,
+          "id": 25804869,
+          "kids": [25806262, 25805703, 25805381, 25805613, 25809108, 25805712, 25809200, 25806848, 25805599, 25805621,
+            25809039, 25805999, 25805487, 25807195, 25809156, 25807998, 25806249, 25805272, 25807379, 25805764,
+            25805359, 25806033, 25807607, 25806898, 25806908, 25805669, 25806276, 25806806, 25805437, 25806822,
+            25805366, 25805495, 25806447, 25805807
+          ],
+          "score": 261,
+          "time": 1610826496,
+          "title": "Mnm – an open source project to replace email and SMTP",
+          "type": "story",
+          "url": "https:\u002F\u002Fmnmnotmail.org\u002F",
+          "__lastUpdated": 1610875221852
+        },
+        "25805112": {
+          "by": "walkingolof",
+          "descendants": 41,
+          "id": 25805112,
+          "kids": [25809254, 25806834, 25805936, 25809252, 25807264, 25806261, 25806165, 25806275, 25806007],
+          "score": 82,
+          "time": 1610828246,
+          "title": "How Akka Cluster Works: Actors Living in a Cluster",
+          "type": "story",
+          "url": "https:\u002F\u002Fwww.lightbend.com\u002Fblog\u002Fhow-akka-cluster-works-actors-living-in-a-cluster",
+          "__lastUpdated": 1610875221857
+        },
+        "25805158": {
+          "by": "tutfbhuf",
+          "descendants": 87,
+          "id": 25805158,
+          "kids": [25806114, 25807829, 25806852, 25808516, 25805469, 25806435, 25806824, 25806618, 25805579, 25806290,
+            25807149, 25806840, 25809216
+          ],
+          "score": 182,
+          "time": 1610828469,
+          "title": "REST Servers in Go: Part 1 – standard library",
+          "type": "story",
+          "url": "https:\u002F\u002Feli.thegreenplace.net\u002F2021\u002Frest-servers-in-go-part-1-standard-library\u002F",
+          "__lastUpdated": 1610875221853
+        },
+        "25805615": {
+          "by": "rrss",
+          "descendants": 30,
+          "id": 25805615,
+          "kids": [25806015, 25807423, 25806065, 25808272, 25807328],
+          "score": 52,
+          "time": 1610832035,
+          "title": "Fujitsu A64FX Microarchitecture Manual [pdf]",
+          "type": "story",
+          "url": "https:\u002F\u002Fgithub.com\u002Ffujitsu\u002FA64FX\u002Fblob\u002Fmaster\u002Fdoc\u002FA64FX_Microarchitecture_Manual_en_1.3.pdf",
+          "__lastUpdated": 1610875221858
+        },
+        "25805635": {
+          "by": "lawrenceyan",
+          "descendants": 91,
+          "id": 25805635,
+          "kids": [25809185, 25806137, 25806183, 25806385, 25806821, 25806951, 25806041, 25808813, 25806835, 25809219,
+            25805826, 25807310
+          ],
+          "score": 124,
+          "time": 1610832173,
+          "title": "Attacking the DeFi ecosystem with flash loans for fun and profit (2020)",
+          "type": "story",
+          "url": "https:\u002F\u002Fwww.palkeo.com\u002Fen\u002Fprojets\u002Fethereum\u002Fbzx.html",
+          "__lastUpdated": 1610875221855
+        },
+        "25807178": {
+          "by": "lermontov",
+          "descendants": 0,
+          "id": 25807178,
+          "score": 4,
+          "time": 1610846574,
+          "title": "Dostoevsky in Love review",
+          "type": "story",
+          "url": "https:\u002F\u002Fwww.theguardian.com\u002Fbooks\u002F2021\u002Fjan\u002F14\u002Fdostoevsky-in-love-by-alex-christofi-review-unpredictable-dangerous-and-thrilling",
+          "__lastUpdated": 1610875797100
+        },
+        "25807199": {
+          "by": "uptown",
+          "descendants": 75,
+          "id": 25807199,
+          "kids": [25807757, 25809234, 25807569, 25807787, 25807891, 25807908, 25808180, 25808874, 25807599, 25807871,
+            25808323, 25807640, 25807882, 25807716, 25809263, 25809213, 25807959, 25807553
+          ],
+          "score": 205,
+          "time": 1610846825,
+          "title": "The first blue pigment discovered in 200 years is now commercially available",
+          "type": "story",
+          "url": "https:\u002F\u002Fnews.artnet.com\u002Fart-world\u002Fyinmn-blue-comes-market-1921665",
+          "__lastUpdated": 1610875221851
+        },
+        "25807792": {
+          "by": "throwaway888abc",
+          "descendants": 94,
+          "id": 25807792,
+          "kids": [25809363, 25809312, 25809289, 25808621, 25809349, 25808994, 25808700, 25808602, 25808574, 25808195,
+            25808214, 25808980, 25808227, 25809192, 25808384, 25808753, 25808223, 25809138, 25808193, 25809154,
+            25808233, 25808784, 25809262, 25809212, 25808333, 25809013
+          ],
+          "score": 217,
+          "time": 1610853872,
+          "title": "JingOS: Linux Distro Inspired by the iPad",
+          "type": "story",
+          "url": "https:\u002F\u002Fwww.jingos.com\u002F",
+          "__lastUpdated": 1610875221850
+        },
+        "25808878": {
+          "by": "akamoonknight",
+          "descendants": 4,
+          "id": 25808878,
+          "kids": [25809179, 25809196],
+          "score": 40,
+          "time": 1610867830,
+          "title": "The World’s Oldest Story? ‘Seven Sisters’ Myths May Reach Back 100k Years",
+          "type": "story",
+          "url": "https:\u002F\u002Fsingularityhub.com\u002F2021\u002F01\u002F10\u002Fthe-worlds-oldest-story-astronomers-say-global-myths-about-seven-sisters-stars-may-reach-back-100000-years\u002F",
+          "__lastUpdated": 1610875221851
+        },
+        "25809066": {
+          "by": "brudgers",
+          "descendants": 3,
+          "id": 25809066,
+          "kids": [25809267],
+          "score": 11,
+          "time": 1610870533,
+          "title": "Sailor’s Chanties (1906) [pdf]",
+          "type": "story",
+          "url": "https:\u002F\u002Fwww.jstor.org\u002Fstable\u002Fpdf\u002F534759.pdf",
+          "__lastUpdated": 1610875797100
+        }
+      },
+      "users": {},
+      "lists": {
+        "top": [25807792, 25808878, 25807199, 25809066, 25804869, 25800791, 25805158, 25802366, 25804183, 25801841,
+          25805635, 25801063, 25804194, 25807178, 25805112, 25801019, 25805615, 25804597, 25800581, 25803748,
+          25803288, 25806788, 25805367, 25801782, 25805937, 25807633, 25803996, 25805548, 25805462, 25807216,
+          25808520, 25805340, 25801426, 25804907, 25801830, 25801850, 25808816, 25803230, 25807291, 25809005,
+          25804505, 25804923, 25801986, 25804654, 25807114, 25808119, 25805779, 25806797, 25800858, 25804633,
+          25788557, 25805718, 25806151, 25802277, 25807319, 25792719, 25789295, 25790158, 25803010, 25788647,
+          25802160, 25808479, 25793163, 25805142, 25805134, 25808576, 25801306, 25805877, 25803599, 25806899,
+          25802562, 25802714, 25801696, 25806423, 25789336, 25800477, 25784683, 25807645, 25800766, 25803568,
+          25807656, 25808413, 25795731, 25789713, 25788037, 25793483, 25800754, 25808334, 25790530, 25800771,
+          25787800, 25801500, 25781471, 25790132, 25804190, 25789073, 25782861, 25806877, 25807815, 25800237,
+          25801546, 25806228, 25801693, 25775872, 25808545, 25798925, 25771022, 25790109, 25803031, 25789837,
+          25790536, 25794659, 25786236, 25801113, 25782891, 25789151, 25803133, 25797674, 25805196, 25786305,
+          25790554, 25807118, 25809114, 25793173, 25795174, 25787587, 25787745, 25796097, 25804822, 25801794,
+          25794849, 25803956, 25799436, 25783152, 25807200, 25792422, 25787648, 25786903, 25793378, 25799359,
+          25802413, 25789204, 25776450, 25798534, 25783508, 25771953, 25796598, 25788409, 25785559, 25788645,
+          25789159, 25797025, 25789809, 25776525, 25789703, 25805576, 25794739, 25775740, 25788993, 25783691,
+          25803673, 25776657, 25775786, 25798148, 25778760, 25793230, 25788229, 25800764, 25803573, 25805185,
+          25794184, 25786182, 25805508, 25782842, 25786640, 25788052, 25775091, 25804826, 25797140, 25795575,
+          25805240, 25775329, 25806333, 25793776, 25796992, 25807911, 25792345, 25794382, 25778676, 25786470,
+          25789099, 25772259, 25806388, 25801821, 25805496, 25775696, 25794374, 25783759, 25785081, 25804712,
+          25805325, 25783017, 25773109, 25785191, 25786167, 25772483, 25788129, 25798226, 25802896, 25801392,
+          25803725, 25799179, 25767128, 25789273, 25779848, 25778829, 25792565, 25790323, 25805527, 25805523,
+          25797229, 25787614, 25777580, 25801770, 25787545, 25794623, 25781645, 25779681, 25771885, 25806888,
+          25779611, 25772365, 25788893, 25801578, 25778088, 25806826, 25793251, 25780589, 25784168, 25775223,
+          25783378, 25792316, 25789603, 25796852, 25784592, 25780588, 25794471, 25794962, 25777082, 25788930,
+          25767627, 25774795, 25800510, 25778590, 25772323, 25780013, 25798231, 25779791, 25778070, 25791023,
+          25795466, 25772296, 25778135, 25802517, 25770996, 25798008, 25798564, 25779930, 25794987, 25793432,
+          25793178, 25773724, 25771133, 25790365, 25779323, 25798783, 25776124, 25800643, 25807232, 25780322,
+          25782120, 25776315, 25805966, 25783617, 25789366, 25798403, 25779347, 25803793, 25807252, 25800500,
+          25775168, 25778185, 25780972, 25783303, 25785139, 25800850, 25786449, 25787717, 25805577, 25777207,
+          25769469, 25800039, 25795181, 25770858, 25805501, 25783817, 25773745, 25771264, 25787716, 25779367,
+          25792225, 25780961, 25786438, 25787594, 25805137, 25783592, 25774546, 25804998, 25803606, 25804947,
+          25774945, 25776225, 25783296, 25772340, 25804773, 25773211, 25805513, 25769730, 25775633, 25799395,
+          25793460, 25783338, 25768112, 25793110, 25785672, 25805901, 25779120, 25804407, 25805231, 25780963,
+          25797902, 25802752, 25775945, 25796271, 25772462, 25767333, 25776590, 25798186, 25788646, 25802556,
+          25776625, 25787838, 25798203, 25804072, 25788111, 25797215, 25794579, 25797439, 25797925, 25769724,
+          25804498, 25793438, 25769117, 25796535, 25793139, 25798048, 25796836, 25798441, 25786607, 25797191,
+          25801787, 25795435, 25796886, 25781994, 25781916, 25785919, 25795187, 25799858, 25800992, 25792395,
+          25788176, 25802824, 25791828, 25785062, 25777884, 25801083, 25774761, 25801463, 25785708, 25781491,
+          25797056, 25782307, 25792715, 25804477, 25794145, 25779175, 25787087, 25799792, 25782455, 25800789,
+          25808431, 25769590, 25796994, 25772792, 25775784, 25802031, 25798032, 25798675, 25795880, 25788122,
+          25788701, 25800951, 25800948, 25798329, 25789061, 25781190, 25796990, 25791618, 25792665, 25790906,
+          25799622, 25787091, 25790270, 25800137, 25780757, 25795314, 25769343, 25786427, 25780986, 25801438,
+          25780943, 25801382, 25801355, 25787441, 25779621, 25801283, 25786956, 25778706, 25789763, 25793349,
+          25767296, 25778795, 25795347, 25799840, 25788850, 25786967, 25771834, 25789691, 25799612, 25794491,
+          25775854, 25770389, 25771181, 25797094, 25798151, 25787377, 25796883, 25804290, 25788067, 25778674,
+          25780483, 25796477, 25796187, 25786820, 25788796, 25771560, 25800579, 25805586, 25795460, 25788317,
+          25787871, 25780992, 25791565, 25790438, 25798001, 25776203, 25787571, 25771417, 25790613, 25776954,
+          25778397, 25800046, 25773863, 25797167, 25797073, 25791442, 25794155, 25796815, 25775619, 25793969,
+          25799703, 25789413, 25796256, 25776080, 25791849, 25802496, 25795423, 25777123, 25769248, 25769043
+        ],
+        "new": [],
+        "show": [],
+        "ask": [],
+        "job": []
+      },
+      "route": {
+        "path": "\u002Ftop",
+        "hash": "",
+        "query": {},
+        "params": {},
+        "fullPath": "\u002Ftop",
+        "meta": {},
+        "from": {
+          "name": null,
+          "path": "\u002F",
+          "hash": "",
+          "query": {},
+          "params": {},
+          "fullPath": "\u002F",
+          "meta": {}
+        }
+      }
+    }
+  </script>
+  <script src="/dist/manifest.js" defer></script>
+  <script src="/dist/1.js" defer></script>
+  <script src="/dist/vendor.js" defer></script>
+  <script src="/dist/app.js" defer></script>
+</body>
+
+</html>
